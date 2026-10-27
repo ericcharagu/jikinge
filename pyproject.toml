@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-ai-app"
+version = "0.1.0"
+description = "FastAPI application with Qwen agent and async database support"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    # Web Framework
+    "fastapi==0.115.12",
+    "uvicorn==0.34.3",
+    "python-multipart",
+    "jinja2",
+
+    # AI & Agents
+    "qwen-agent[rag]",
+    "tavily",
+    "tenacity",
+    "aiocache",
+    "loguru",
+    "soundfile",
+    "ollama",
+    "fastmcp",
+    "tqdm",
+
+    # File manipulation
+    "pillow",
+    "pdfplumber",
+
+    # Message & Queue Management
+    "confluent-kafka",
+
+    # Databases & Cache
+    "sqlalchemy[asyncio]",
+    "asyncpg",
+    "redis",
+    "qdrant-client==1.18.0",
+
+    # Utilities
+    "reportlab",
+    "python-statemachine",
+
+    # Security & Logic
+    "pydantic",
+    "pydantic[email]",
+    "pydantic-settings",
+    "pycryptodome",
+    "python-jose[cryptography]",
+    "passlib[bcrypt]",
+    "cryptography",
+    "bcrypt",
+    "aiofiles",
+    "httpx",
+    "pyyaml",
+    "celery",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-mock",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]

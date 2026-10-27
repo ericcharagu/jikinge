@@ -1,0 +1,28 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.env.local
+.env
+
+#Secrets and SSH 
+secrets/
+.ssh/
+
+#terminal logs
+*.bash_history
+logs/
+
+#All user generated data 
+*.db
+media_files/
+.vscode/
+
+#Codebase 
+*.codebase/
