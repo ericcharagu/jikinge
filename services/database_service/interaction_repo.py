@@ -1,6 +1,7 @@
-from models import CacheMessage
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from domain.schema import CacheMessage
 
 from .base import AsyncSessionLocal
 from .orm_schema import InteractionLogOrm

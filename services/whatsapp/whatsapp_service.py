@@ -8,12 +8,9 @@ from typing import Any
 
 import httpx
 from loguru import logger
-from models import MatchedInventoryItems, ProductRequest
-from utils.api.api_base import post_api_request
-from utils.api.api_schema import check_and_convert_image_link
 
 from config import WHATSAPP_HEADERS, WHATSAPP_URL, settings
-from messages.messages_schema import (
+from domain.messages_schema import (
     ButtonsMessage,
     CarouselMessage,
     DocumentMessage,
@@ -25,6 +22,8 @@ from messages.messages_schema import (
     TextMessage,
     create_media_carousel,
 )
+from services.api.api_base import post_api_request
+from utils.text_processing import check_and_convert_image_link
 
 from .whatsapp_schema import (
     whatsapp_decryption,
@@ -384,8 +383,8 @@ async def upload_to_whatsapp(file_path: str) -> str:
 
 async def send_inventory_as_carousel(
     user_id: str,
-    product_requests: list[ProductRequest],
-    ranked_inventory_list: list[MatchedInventoryItems],
+    product_requests: list[Any],
+    ranked_inventory_list: list[Any],
 ) -> None:
     """
     Processes nested options and maintains a global counter across multiple products.
@@ -400,4 +399,4 @@ async def send_inventory_as_carousel(
 
 
 # used for testing
-# send_whatsapp_text("This is the test for lane", "254736391323")
+# send_whatsapp_text("This is the test for jikinge", "254736391323")

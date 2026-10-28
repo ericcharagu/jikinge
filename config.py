@@ -1,9 +1,9 @@
 import asyncio
 from asyncio.locks import Semaphore
-from typing import Any
 from zoneinfo import ZoneInfo
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from tavily import TavilyClient
 
 
 class AppSettings(BaseSettings):
@@ -12,10 +12,7 @@ class AppSettings(BaseSettings):
     )
 
     # AI API config
-    VLLM_HOST: str
-    VLLM_AGENT_HOST: str
-    LLM_MODEL_ID: str = "Qwen/Qwen3-8B-FP8"
-    VISION_MODEL_ID: str = "Qwen/Qwen2.5-VL-7B-Instruct"
+    LLM_API_KEY: str
     AGGREGATOR_SEM: Semaphore = asyncio.Semaphore(5)
 
     # Vector DB (Qdrant) Configuration
@@ -23,14 +20,10 @@ class AppSettings(BaseSettings):
     OLLAMA_HOST: str
     QDRANT_HOST: str
     QDRANT_PORT: int = 6333
-    QDRANT_COLLECTION_NAME: str = "lane_data_collection"
-    REFERRAL_COLLECTION: str = "lane_referral_collection"
-    OIL_FINDERS_COLLECTION: str = "oil_finders_collection"
-    FAQ_COLLECTION: str = "faq_collection"
     DIMENSION: int = 768
     CHUNK_SIZE: int = 100
     SEARCH_LIMIT: int = 20
-
+    QDRANT_COLLECTION_NAME: str = "jikinge_vector_collection"
     # Tavily API
     TAVILY_KEY: str
     TAVILY_MAX_RESULTS: int = 5
@@ -45,7 +38,7 @@ class AppSettings(BaseSettings):
 
     # Kafka settings
     KAFKA_BOOTSTRAP_SERVERS: str = "kafka:9092"
-    KAFKA_GROUP_ID: str = "lane-storage-consumer"
+    KAFKA_GROUP_ID: str = "jikinge-storage-consumer"
     KAFKA_STORAGE_TOPIC: str = "storage-operations"
     KAFKA_ERROR_TOPIC: str = "error-logs"
     KAFKA_HEALTH_TOPIC: str = "health-checks"
@@ -78,31 +71,17 @@ class AppSettings(BaseSettings):
     DB_PORT: str
     DB_NAME: str
     DB_USER: str
-    DB_PASSWORD: str
 
     # Jikinge API
-    INVENTORY_API: str
-    PLACE_ORDER_API_URL: str
-    INTERVENTION_API: str
-    REFERRAL_CODE_API: str
-    CONFIRM_ORDER_API: str
-    FALLBACK_PRODUCT_IMAGE: str
-    WEB_API_CHAT: str
-
+    DASHBOARD_API: str
+    FRONTEND_API: str
+    NOTIFICATION_API: str
+    ERROR_API: str
     # Intervention settings. To be sent a Whatsapp message hence no +.
     HUMAN_INTERVENTION_NUMBER: str
 
-    # Neo4j (Graph Knowledge)
-    NEO4J_URI: str
-    NEO4J_USER: str
-    NEO4J_PASSWORD: str
-    KNOWLEDGE_GRAPH_SEARCH_LIMIT: int = 10
-
     # --- Uniform Timezone
     NAIROBI_TZ: ZoneInfo = ZoneInfo("Africa/Nairobi")
-
-    # Default referral code
-    DEFAULT_REFERRAL_CODE: str = "8CCSYOR5"
 
     # Messaging Universal settings
     MAX_ALLOWED_CAROUSEL_CARD_INDEX: int = 10
@@ -110,21 +89,17 @@ class AppSettings(BaseSettings):
 
 settings = AppSettings()
 
-# Qwen agent configuration
-llm_configuration: dict[str, Any] = {
-    "model": settings.LLM_MODEL_ID,
-    "model_server": settings.VLLM_AGENT_HOST,
-    "generate_cfg": {
-        "top_p": 0.8,
-        "temperature": 0,
-        "max_input_tokens": 9900,
-        "extra_body": {"chat_template_kwargs": {"enable_thinking": False}},
-    },
-}
+USER_SESSION_TTL: int = 3600
 
 WHATSAPP_URL: str = f"https://graph.facebook.com/{settings.API_VERSION}/{settings.PHONE_NUMBER_ID}/messages"
 
 WHATSAPP_MEDIA_URL: str = f"https://graph.facebook.com/{settings.API_VERSION}"
+
+# --- Shared Tavily Client ---
+
+
+TAVILY_CLIENT = TavilyClient(api_key=settings.TAVILY_KEY)
+
 
 WHATSAPP_HEADERS: dict[str, str] = {
     "Authorization": f"Bearer {settings.WHATSAPP_ACCESS_TOKEN}",

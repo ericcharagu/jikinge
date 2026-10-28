@@ -1,37 +1,38 @@
 from decimal import Decimal
 
-from database.deductables_repo import deductables_repo
-from database.orm_schema import DeductablesOrm
-from domain.schema import Deductable
+from services.database_service.deductibles_repo import deductibles_repo
+
+from domain.schema import Deductible
+from services.database_service.orm_schema import DeductiblesOrm
 
 
-async def _all_deductables() -> list[dict[str, bool | Deductable]]:
-    deductables: list[DeductablesOrm] = await deductables_repo.get_all_deductables()
+async def _all_deductibles() -> list[dict[str, bool | Deductible]]:
+    deductibles: list[DeductiblesOrm] = await deductibles_repo.get_all_deductibles()
     return [
-        {"selected": "false", "deductable": Deductable(deductable["deductable_name"])}
-        for deductable in enumerate(deductables)
+        {"selected": "false", "deductible": deductible(deductible["deductible_name"])}
+        for deductible in enumerate(deductibles)
     ]
 
 
-def total_deductable_discount(deductable: list[Deductable]) -> Decimal:
-    deductable_discount: list[DeductablesOrm] = (
-        deductables_repo.get_deductable_discount()
+def total_deductible_discount(deductible: list[Deductible]) -> Decimal:
+    deductible_discount: list[DeductiblesOrm] = (
+        deductibles_repo.get_deductible_discount()
     )
     return sum(
-        Decimal(deductable.deductable_value) for deductable in deductable_discount
+        Decimal(deductible.deductible_value) for deductible in deductible_discount
     )
 
 
-def total_deductable_levies(deductable: list[Deductable]) -> Decimal:
-    deductable_levies: list[DeductablesOrm] = deductables_repo.get_deductable_levies()
-    return sum(Decimal(deductable.deductable_value) for deductable in deductable_levies)
+def total_deductible_levies(deductible: list[Deductible]) -> Decimal:
+    deductible_levies: list[DeductiblesOrm] = deductibles_repo.get_deductible_levies()
+    return sum(Decimal(deductible.deductible_value) for deductible in deductible_levies)
 
 
 def calculate_total_payable(
-    base_rate: Decimal, discount_head: list[Deductable]
+    base_rate: Decimal, discount_head: list[Deductible]
 ) -> Decimal:
-    for deductable in discount_head:
-        if "%" in deductable.deductable_value:
-            base_rate = base_rate * (1 - deductable.deductable_value)
-        base_rate - deductable.deductable_value
+    for deductible in discount_head:
+        if "%" in deductible.deductible_value:
+            base_rate = base_rate * (1 - deductible.deductible_value)
+        base_rate - deductible.deductible_value
     return base_rate

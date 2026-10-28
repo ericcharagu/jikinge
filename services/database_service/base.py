@@ -4,19 +4,23 @@ from datetime import datetime
 from typing import Any
 
 from loguru import logger
-from orm_schema import Base
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from config import settings
 from domain.excepts import DatabaseConnectionStringException
 
+from .orm_schema import Base
+
 
 # Get connection to DB
 def get_async_connection_string() -> str:
+    with open("/app/secrets/postgres_secrets.txt", "r") as file:
+        db_password_list: list[str] = [line.strip() for line in file]
+
     """Construct the ASYNCHRONOUS database connection string."""
     connection_string: str = (
-        f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}@"
+        f"postgresql+asyncpg://{settings.DB_USER}:{db_password_list[0]}@"
         f"{settings.DB_HOST}:{settings.DB_PORT}/"
         f"{settings.DB_NAME}"
     )

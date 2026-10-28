@@ -1,11 +1,11 @@
 from typing import Any
 
 from loguru import logger
-from models import CacheMessage
 from ollama import AsyncClient
 from qdrant_client import AsyncQdrantClient, models
 
 from config import settings
+from domain.schema import CacheMessage
 
 from .rag_port import RagRetrieverPort
 

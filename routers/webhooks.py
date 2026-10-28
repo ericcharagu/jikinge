@@ -3,13 +3,12 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
 from fastapi.responses import PlainTextResponse
 from loguru import logger
-from utils.processing import MessageOrchestrator
 
 from config import settings
-
-from .sender_services import PLATFORM
-from .whatsapp.webhooks_helper import extract_message_details
-from .whatsapp.whatsapp_schema import MessageRequest
+from services.sender_service import PLATFORM
+from services.whatsapp.whatsapp_helper import extract_message_details
+from services.whatsapp.whatsapp_schema import MessageRequest
+from utils.processor import MessageOrchestrator
 
 router = APIRouter(
     prefix="/webhooks",

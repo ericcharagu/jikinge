@@ -2,9 +2,9 @@ import json
 from datetime import datetime
 
 from config import settings
-from excepts import UserCreationException
-from models import CacheMessage, CurrentCart, User
-from utils.cache.cache_port import CachePort
+from domain.excepts import UserCreationException
+from domain.schema import CacheMessage, User
+from services.cache_service.cache_port import CachePort
 
 
 class UserService:
@@ -18,7 +18,6 @@ class UserService:
 
             if user_json:
                 data = json.loads(user_json)
-                data["cart"] = CurrentCart(**data.get("cart", {}))
 
                 # Convert car make from list to str
                 if isinstance(data["car_make"], list):
@@ -32,9 +31,6 @@ class UserService:
             # Create New User
             new_user = User(
                 user_id=user_id,
-                cart=CurrentCart(
-                    cart_id=f"cart_{user_id[:6]}_{int(datetime.now(settings.NAIROBI_TZ).timestamp())}"
-                ),
                 created_at=datetime.now(settings.NAIROBI_TZ).isoformat(),
                 referring_agent=settings.DEFAULT_REFERRAL_CODE,
             )

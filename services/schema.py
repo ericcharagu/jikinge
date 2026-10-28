@@ -1,5 +1,6 @@
 from typing import Protocol
-from messages.messages_schema import Message
+
+from domain.messages_schema import Message
 
 
 class SenderServiceProtocol(Protocol):

@@ -1,17 +1,18 @@
 from contextlib import asynccontextmanager
 
 import httpx
-from db.base import AsyncSessionLocal
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from kafka.storage_queue_manager import KafkaStorageQueueManager
 from loguru import logger
 
-from cache.cache_adapter import RedisCacheAdapter
-from domain.excepts import SystemErrorType, User
-from rag.qdrant_port import retriever
+from domain.excepts import SystemErrorType
+from domain.schema import User
+from rag.qdrant_port import standard_retriever
 from routers import webhooks
+from services.cache_service.cache_adapter import RedisCacheAdapter
+from services.database_service.base import AsyncSessionLocal
 from services.error_reporting_service import ErrorReportingService
+from services.queue_service.storage_queue_manager import KafkaStorageQueueManager
 
 
 # --- Application Lifespan ---
@@ -58,7 +59,7 @@ async def lifespan(app: FastAPI):
     # --- Initialise the Vector database ---
     try:
         # Await the knowledge vector_database init and setup
-        collections = await retriever.initialize()
+        collections = await standard_retriever.initialize()
 
         # Check if collection already exists
 
@@ -70,7 +71,7 @@ async def lifespan(app: FastAPI):
         #        await retriever.client.delete_collection(collection_name = collection)
 
         # --- Sync the Vector database ---
-        yield {"retriever": retriever}
+        yield {"retriever": standard_retriever}
     except Exception as e:
         logger.critical(f"Failed to initialize Qdrant DB: {e}")
         await ErrorReportingService.report_system_error(

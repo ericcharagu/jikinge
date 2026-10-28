@@ -19,7 +19,7 @@ class KafkaProducer:
     def __init__(
         self,
         bootstrap_servers: str = settings.KAFKA_BOOTSTRAP_SERVERS,
-        client_id: str = "lane-producer",
+        client_id: str = "jikinge-producer",
         acks: str = settings.KAFKA_ACKS,
         retries: int = settings.KAFKA_RETRIES,
         linger_ms: int = settings.KAFKA_LINGER_MS,
@@ -156,7 +156,7 @@ class KafkaProducer:
                 result = await asyncio.wait_for(future, timeout=timeout)
                 logger.debug(f"Message produced to {topic} with key {key}")
                 return result
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.error(f"Kafka produce timeout after {timeout}s")
                 return False
 

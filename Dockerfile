@@ -20,7 +20,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 WORKDIR /app
 
 # Copy project configuration files and lock file (if present) to leverage caching
-COPY pyproject.toml uv.lock* README.md* ./
+COPY pyproject.toml uv.lock* ./
 
 # Copy the rest of the application source code needed for package installation
 COPY . .

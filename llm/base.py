@@ -3,11 +3,11 @@ import time
 from functools import wraps
 from typing import Any
 
-from excepts import QwenErrorException
 from qwen_agent.agents import Assistant
 from qwen_agent.llm.base import ModelServiceError
 
 from config import llm_configuration
+from domain.excepts import QwenErrorException
 
 
 def agent_timer(func):

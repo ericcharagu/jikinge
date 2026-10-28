@@ -1,7 +1,10 @@
 import ast
 import json
 import re
+from pathlib import Path
 from typing import Any
+
+from config import settings
 
 
 def strip_json_fence(s: str) -> str:
@@ -95,3 +98,28 @@ def string_to_float(amount: str) -> float:
         return float(amount_part[1])
     else:
         return float(amount)
+
+
+def check_and_convert_image_link(image_link: str) -> str:
+    """
+    Check if image link is valid and in allowed JPG format. If none default to internal fallback image path
+
+    Args:
+        image_link: URL or local path to the image
+
+    Returns:
+        str: Path to the image (original or converted)
+    """
+    # Check image extension with pathlib
+    image_path = Path(image_link)
+    extension = image_path.suffix.lower()
+    if not extension:
+        # Fallback if no valid link
+        return settings.FALLBACK_PRODUCT_IMAGE
+    if extension == ".webp":
+        # Fall back to "no image available" image in jpg
+
+        return settings.FALLBACK_PRODUCT_IMAGE
+
+    else:
+        return image_link

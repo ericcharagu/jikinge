@@ -1,6 +1,6 @@
 from typing import Any, Protocol
 
-from models import CacheMessage
+from domain.schema import CacheMessage
 
 
 class CachePort(Protocol):

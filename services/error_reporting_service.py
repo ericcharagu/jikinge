@@ -1,12 +1,12 @@
 import traceback
 from datetime import datetime
 
-from dependencies import retry_decorator
 from loguru import logger
-from models import InterventionError, User
 
 from config import settings
 from domain.excepts import InterventionMessageDeliveryException
+from domain.schema import InterventionError, User
+from utils.helpers import retry_decorator
 
 from .api import api_base
 
@@ -40,7 +40,7 @@ class ErrorReportingService:
             "sms_content": sms_error_message,
         }
 
-        # Send the error message via Lane notify api
+        # Send the error message via jikinge notify api
         response = await api_base.post_api_request(settings.INTERVENTION_API, payload)
 
         if response.status_code not in [200, 201]:

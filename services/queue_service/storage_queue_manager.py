@@ -8,13 +8,13 @@ from enum import Enum
 from typing import Any
 
 from loguru import logger
-from utils.cache.cache_port import CachePort
-from utils.db.db_port import StorageUnitOfWork
-from utils.services.error_reporting_service import ErrorReportingService
 
 from config import settings
 from domain.excepts import SystemErrorType
 from domain.schema import CacheMessage, User
+from services.cache_service.cache_port import CachePort
+from services.database_service.store_interactions import LoggingUnitOfWork
+from services.error_reporting_service import ErrorReportingService
 
 from .consumer import ConsumerMessage, KafkaConsumer
 from .producer import KafkaProducer
@@ -258,7 +258,7 @@ class KafkaStorageQueueManager:
 
     async def _persist_to_db(self, cache_message: CacheMessage) -> None:
         """Persist to database"""
-        async with StorageUnitOfWork(self.session_factory) as uow:
+        async with LoggingUnitOfWork(self.session_factory) as uow:
             await uow.interaction.add(cache_message)
 
     async def _report_failure(

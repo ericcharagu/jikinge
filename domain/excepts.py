@@ -2,9 +2,9 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
-from utils.messaging.messages_schema import FallbackTextMessage
-
 from config import settings
+
+from .messages_schema import FallbackTextMessage
 
 
 class SystemErrorType(StrEnum):
@@ -19,7 +19,7 @@ class SystemErrorType(StrEnum):
     QUEUE_ERROR = "queue_error"  # Queue manager error
     CACHE_ERROR = "cache_error"  # Redis or cache database is down
     VECTOR_DB_ERROR = "vector_db_error"  # Qdrant or Embedding server failure
-    API_FAILURE = "api_failure"  # Lane API 500s or timeouts
+    API_FAILURE = "api_failure"  # jikinge API 500s or timeouts
     MEDIA_ERROR = "media_error"  # WhatsApp Image download failure
     VALIDATION_ERROR = "validation_error"  # Critical data corruption
 
@@ -32,7 +32,7 @@ class ErrorSeverity(StrEnum):
 
 
 class JikingeAgentException(Exception):
-    """Base exception for Lane related errors"""
+    """Base exception for jikinge related errors"""
 
     severity: ErrorSeverity = ErrorSeverity.MEDIUM
 
@@ -61,6 +61,52 @@ class MissingIntentHandlerError(JikingeAgentException):
         super().__init__(
             message="Cannot find handler for the user's intent",
             context={"intent": intent},
+        )
+
+
+class UserCreationException(JikingeAgentException):
+    """Raised when there is an error creating a new user object"""
+
+    severity: ErrorSeverity = ErrorSeverity.HIGH
+
+    def __init__(self, user_id: str, original_error: Exception) -> None:
+
+        super().__init__(
+            message=f"Cannot create user {user_id} :{original_error}",
+        )
+
+
+class NoProcessableMessageException(JikingeAgentException):
+    """Exception for webhook processing"""
+
+    severity: ErrorSeverity = ErrorSeverity.HIGH
+
+    def __init__(self, message: str):
+        super().__init__(
+            message=message,
+        )
+
+
+class WhatsAppApiException(JikingeAgentException):
+    """Exception for WhatsApp API failures"""
+
+    severity: ErrorSeverity = ErrorSeverity.CRITICAL
+
+    def __init__(self, original_error: Exception, user_id: str):
+        super().__init__(
+            message=f"WhatsApp API failure for {user_id}: {original_error!s}",
+            context={"user_id": user_id},
+        )
+
+
+class WhatsAppMessageTypeException(JikingeAgentException):
+    """Exception for WhatsApp API message processing failures"""
+
+    severity: ErrorSeverity = ErrorSeverity.LOW
+
+    def __init__(self, message_type: str):
+        super().__init__(
+            message=f"Cannot process the message type {message_type}",
         )
 
 

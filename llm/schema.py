@@ -1,8 +1,9 @@
 from typing import Any, Self
 
-from models import CacheMessage, LlmMessageType, User
 from pydantic import BaseModel, Field, field_validator
-from utils.messaging.messages_schema import TextMessage
+
+from domain.messages_schema import TextMessage
+from domain.schema import CacheMessage, LlmMessageType, User
 
 
 class PlannerAgentInput(BaseModel):

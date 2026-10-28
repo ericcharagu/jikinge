@@ -4,11 +4,10 @@ from typing import Any
 
 import redis.asyncio as redis
 from loguru import logger
-from models import CacheMessage, User
-from utils.cache.cache_port import CachePort
 
-from config import settings
-from dependencies import USER_SESSION_TTL
+from config import USER_SESSION_TTL, settings
+from domain.schema import CacheMessage, User
+from services.cache_service.cache_port import CachePort
 
 # Set cache hold time
 MESSAGE_ID_EXPIRATION_SECONDS = 300
@@ -158,7 +157,7 @@ class RedisCacheAdapter(CachePort):
             client: Redis client handling the session
             user_id:  Phone number used to send the request
         Returns:
-            True: The user's history has been deleted from cache
+            True: The user's history has been deleted from services.cache_service
         """
         try:
             key = f"chat_history:{user_id}"

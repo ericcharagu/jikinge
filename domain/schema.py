@@ -49,7 +49,7 @@ def _get_llm_instructions_for(query_type: QueryTypeEnum):
         For bullets when listing, use the symbol -. Do NOT use *
         
         Valid examples:
-        *Join the Lane Referral Program* to earn bonuses
+        *Join the jikinge Referral Program* to earn bonuses
         *Return Window* is two days from delivery
         *Refund Process* completes within seven business days
 
@@ -83,15 +83,15 @@ class InsuranceTypes(StrEnum):
     HOME = "home"
 
 
-class DeductableType(StrEnum):
+class DeductibleType(StrEnum):
     DISCOUNT = "discount"
     LEVIES = "levies"
 
 
-class Deductable(TypedDict):
-    deductable_type: DeductableType.value
-    deductable_name: str
-    deductable_value: str
+class Deductible(TypedDict):
+    deductible_type: DeductibleType
+    deductible_name: str
+    deductible_value: str
 
 
 class Premium(TypedDict):
@@ -128,19 +128,24 @@ class User(BaseModel):
     metadata: Any = Field(
         default=VehicleMetadata, description="Details of the object being insured"
     )
-    _sum_insured: str = Field(default="")
-    _base_rate_percentage: float = Field(default=0.0, ge=0.0, le=100.0)
-    _gross_base_premium: str = Field(default="")
+    sum_insured: str = Field(default="")
+    base_rate_percentage: float = Field(default=0.0, ge=0.0, le=100.0)
     premiums: list[Premium] = Field(default_factory=list)
-    deductables: list[Deductable] = Field(default_factory=list)
+    deductibles: list[Deductible] = Field(default_factory=list)
     total_payable: str = Field(
         default="",
-        description="Amount user has to pay after deductables from the base premium",
+        description="Amount user has to pay after deductibles from the base premium",
     )
 
     @property
-    def sum_insured(self) -> Decimal:
+    def insurance_sum(self) -> Decimal:
+        """Insurance sum to be paid based on object value"""
         return Decimal(self._sum_insured)
+
+    @property
+    def gross_base(self) -> Decimal:
+        """Initial amount payable before the deductibles"""
+        return Decimal(str(self._sum_insured * self.base_rate))
 
     @property
     def gross_base_premium(self) -> str:
@@ -151,13 +156,13 @@ class User(BaseModel):
 
         return str(gross_base_premium)
 
-    def calculate_total_payable(self, intial_total_payable: str) -> str:
-        """Calculate the amount to be paid afer the deductables"""
-        total_payable: Decimal = Decimal(intial_total_payable)
-        for deductable in self.deductables:
-            if "%" in deductable.deductable_value:
-                total_payable -= total_payable * Decimal(deductable.deductable_value)
-            total_payable - Decimal(deductable.deductable_value)
+    def calculate_total_payable(self, initial_total_payable: str) -> str:
+        """Calculate the amount to be paid after the deductibles"""
+        total_payable: Decimal = Decimal(initial_total_payable)
+        for deductible in self.deductibles:
+            if "%" in deductible.deductible_value:
+                total_payable -= total_payable * Decimal(deductible.deductible_value)
+            total_payable - Decimal(deductible.deductible_value)
         return str(total_payable)
 
     # Helpful methods for data access and setting
@@ -189,16 +194,6 @@ class User(BaseModel):
             }
         },
     )
-
-    @property
-    def insurance_sum(self) -> Decimal:
-        """The  property."""
-        return Decimal(self._sum_insured)
-
-    @property
-    def gross_base(self) -> Decimal:
-        """The  property."""
-        return Decimal(str(self._sum_insured * self.base_rate))
 
     # ===== VALIDATORS =====
     @model_validator(mode="after")

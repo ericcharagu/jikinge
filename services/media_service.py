@@ -2,15 +2,15 @@ import uuid
 
 import aiofiles
 import httpx
-from excepts import MediaDownloadException
 
-from config import WHASTAPP_HEADERS, WHATSAPP_MEDIA_URL
+from config import WHATSAPP_HEADERS, WHATSAPP_MEDIA_URL
+from domain.excepts import MediaDownloadException
 
 
 class MediaService:
     def __init__(self) -> None:
         self.url: str = WHATSAPP_MEDIA_URL
-        self.headers: dict[str, str] = WHASTAPP_HEADERS
+        self.headers: dict[str, str] = WHATSAPP_HEADERS
 
     async def download_whatsapp_media(self, media_id: str) -> str:
         try:

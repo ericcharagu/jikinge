@@ -1,11 +1,11 @@
 from enum import StrEnum
 from typing import Any, Protocol
 
-from excepts import MissingSenderException, UnsupportedMessageTypeException
 from loguru import logger
 
 from config import settings
-from messages.messages_schema import (
+from domain.excepts import MissingSenderException, UnsupportedMessageTypeException
+from domain.messages_schema import (
     BaseMessage,
     ButtonsMessage,
     CarouselMessage,
@@ -77,7 +77,7 @@ class WebSender(MessageSender):
         await post_api_request(settings.WEB_API_CHAT, payload=payload)
 
 
-class SenderServivce:
+class SenderService:
     def __init__(self):
         self._sender_registry: dict[str, MessageSender] = {}
 
@@ -92,6 +92,6 @@ class SenderServivce:
 
 
 # Create and register all sending services
-sender: SenderServivce = SenderServivce()
+sender: SenderService = SenderService()
 sender.register(platform=PLATFORM.WHATSAPP, sender=WhatsAppSender())
 sender.register(platform=PLATFORM.WEB, sender=WebSender())

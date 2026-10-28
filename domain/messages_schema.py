@@ -2,7 +2,6 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from models import MatchedInventoryItems, ProductRequest
 from pydantic import BaseModel, Field
 
 from config import settings
@@ -166,8 +165,8 @@ def generate_caption() -> str:
 
 
 def create_media_carousel(
-    ranked_inventory_list: list[MatchedInventoryItems],
-    product_requests: list[ProductRequest],
+    ranked_inventory_list: list[Any],
+    product_requests: list[Any],
 ) -> CarouselMessage:
     global_option_idx = 1
 

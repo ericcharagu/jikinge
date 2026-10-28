@@ -3,10 +3,9 @@ import hmac
 from datetime import datetime, timedelta
 from typing import Any
 
-from config import settings
-from dependencies import USER_SESSION_TTL
-from excepts import NoProcessableMessageException, WhatsAppMessageTypeException
-from models import CurrentCart, User
+from config import USER_SESSION_TTL, settings
+from domain.excepts import NoProcessableMessageException, WhatsAppMessageTypeException
+from domain.schema import User
 
 from .whatsapp_schema import MessageRequest
 
@@ -33,12 +32,9 @@ def create_user_from_request(user_id: str) -> User:
         datetime.now(settings.NAIROBI_TZ) + timedelta(seconds=USER_SESSION_TTL)
     ).isoformat()
 
-    new_user_cart = CurrentCart(cart_id=cart_id)
-
     return User(
         user_id=user_id,
         address="unknown",
-        cart=new_user_cart,
         created_at=current_time,
         updated_at=current_time,
         expires_at=expires_at,
@@ -47,7 +43,7 @@ def create_user_from_request(user_id: str) -> User:
 
 def extract_request_from_whatsapp(
     message_request: MessageRequest, whatsapp_message: dict[str, Any]
-) -> "MessageRequest":
+) -> MessageRequest:
     for entry in whatsapp_message.get("entry", []):
         for change in entry.get("changes", []):
             # Extract the contact info

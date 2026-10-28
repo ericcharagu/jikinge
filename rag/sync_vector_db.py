@@ -1,8 +1,6 @@
 import asyncio
 
 from loguru import logger
-
-from dependencies import fetch_all_inventory_data
 from utils.db.qdrant import standard_retriever
 
 
@@ -13,15 +11,6 @@ async def run_manual_sync():
     logger.info("Starting Manual Vector Sync via CLI...")
 
     try:
-        # 1. Fetch from Lane API
-        inventory = await fetch_all_inventory_data()
-
-        # 2. Initialize Retriever
-        await standard_retriever.initialize()
-
-        # 3. Run Sync
-        await standard_retriever.sync_full_inventory(inventory)
-
         logger.success("CLI Vector Sync Complete.")
     except Exception as e:
         logger.error(f"Sync failed: {e}")

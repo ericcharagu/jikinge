@@ -6,8 +6,7 @@ from typing import Any
 from qwen_agent.tools.base import BaseTool, register_tool
 from rag.vector_db import qdrant
 
-from config import settings
-from dependencies import tavily_client
+from config import TAVILY_CLIENT, settings
 
 
 @register_tool("internet_search_tool")
@@ -24,7 +23,7 @@ class TavilySearchTool(BaseTool):
 
     def call(self, params: str, **kwargs) -> str:
         query = json.loads(params)["query"]
-        results = tavily_client.search(query, max_results=settings.TAVILY_MAX_RESULTS)
+        results = TAVILY_CLIENT.search(query, max_results=settings.TAVILY_MAX_RESULTS)
         return json.dumps(results)
 
 

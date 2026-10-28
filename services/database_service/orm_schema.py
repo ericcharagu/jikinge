@@ -21,13 +21,13 @@ class Profile(Base):
     premium: Mapped[DECIMAL] = mapped_column(DECIMAL)
 
 
-class DeductablesOrm(Base):
-    __tablename__ = "Deductables"
+class DeductiblesOrm(Base):
+    __tablename__ = "deductibles"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    deductable_type: Mapped[str] = mapped_column(String, index=True)
-    deductable_name: Mapped[str] = mapped_column(String)
-    deductable_value: Mapped[str] = mapped_column(String)
+    deductible_type: Mapped[str] = mapped_column(String, index=True)
+    deductible_name: Mapped[str] = mapped_column(String)
+    deductible_value: Mapped[str] = mapped_column(String)
 
 
 class PremiumsOrm(Base):
